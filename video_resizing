@@ -1,0 +1,40 @@
+# Import the necessary library
+from moviepy.editor import VideoFileClip
+
+# Define a function to resize the video
+def resize_video(input_path, output_path, target_width=None, target_height=None):
+    """
+    Resize the video to a new width or height while maintaining aspect ratio.
+    If both width and height are provided, resize to those exact dimensions.
+
+    :param input_path: Path to the input video file.
+    :param output_path: Path to save the resized video file.
+    :param target_width: New width of the video (optional).
+    :param target_height: New height of the video (optional).
+    """
+    # Open the input video using VideoFileClip
+    with VideoFileClip(input_path) as video:
+        if target_width is not None and target_height is None:
+            # Resize the video maintaining the aspect ratio based on the width
+            video = video.resize(width=target_width)
+        elif target_height is not None and target_width is None:
+            # Resize the video maintaining the aspect ratio based on the height
+            video = video.resize(height=target_height)
+        elif target_width is not None and target_height is not None:
+            # Resize the video to the specified width and height (aspect ratio may change)
+            video = video.resize(newsize=(target_width, target_height))
+
+        # Save the resized video with specified output path and codecs
+        video.write_videofile(output_path, codec='libx264', audio_codec='aac')
+
+# Define input and output paths and file names
+input_path = 'Your path'
+input_file_name = 'file_name'
+
+output_path = 'Your path'
+output_file_name = 'output_file_name'
+
+# Example usage
+resize_video(input_path + input_file_name, output_path + output_file_name, target_width=1920)  # Resize based on width, keep aspect ratio
+# resize_video(input_path + input_file_name, output_path + output_file_name, target_height=480)  # Resize based on height, keep aspect ratio
+# resize_video(input_path + input_file_name, output_path + output_file_name, target_width=720, target_height=480)  # Resize to exact dimensions
