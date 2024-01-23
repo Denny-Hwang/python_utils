@@ -1,0 +1,71 @@
+import cv2
+import os
+
+
+def get_image_files_in_folder(folder_path, valid_extensions=(".png", ".jpg")):
+    """
+    Get a list of image file paths in the specified folder with valid extensions.
+
+    :param folder_path: Path to the folder containing image files.
+    :param valid_extensions: Tuple of valid image file extensions (default: (".png", ".jpg")).
+    :return: List of image file paths.
+    """
+    image_files = []
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith(valid_extensions):
+            image_files.append(os.path.join(folder_path, filename))
+    return image_files
+
+
+def create_video_from_images(image_files, output_video_path, frame_rate=6, codec='mp4v'):
+    """
+    Create a video from a list of image files.
+
+    :param image_files: List of image file paths.
+    :param output_video_path: Path to save the output video file.
+    :param frame_rate: Frames per second (default: 6).
+    :param codec: Video codec (default: 'mp4v' for MP4).
+    """
+    if not image_files:
+        print("No image files found in the specified folder.")
+        return
+
+    # Load the first image to get its dimensions
+    first_image = cv2.imread(image_files[0])
+    height, width = first_image.shape[:2]
+
+    # Create a video writer
+    fourcc = cv2.VideoWriter_fourcc(*codec)
+    video_writer = cv2.VideoWriter(output_video_path, fourcc, frame_rate, (width, height))
+
+    # Write the images to the video file
+    for image_file in image_files:
+        image = cv2.imread(image_file)  # Load each image
+        if image.shape[:2] != (width, height):
+            image = cv2.resize(image, (width, height))  # Resize if necessary
+        video_writer.write(image)  # Write the image to the video
+
+    # Release the video writer, finalizing the video file
+    video_writer.release()
+
+
+def main():
+    # Set the path to the directory containing your image files
+    image_folder = "Your image file path"
+
+    # Get image files in the specified folder
+    image_files = get_image_files_in_folder(image_folder)
+
+    # Check if any image files were found
+    if not image_files:
+        return
+
+    # Specify the output video path
+    output_video_path = os.path.join(image_folder, "file_name.mp4")
+
+    # Create the video from the images
+    create_video_from_images(image_files, output_video_path)
+
+
+if __name__ == "__main__":
+    main()
